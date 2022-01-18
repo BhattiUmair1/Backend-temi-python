@@ -28,10 +28,10 @@ def on_message(client, userdata, msg):
 
     print(msg.topic + " " + str(msg.payload))
     print(f"Raw message: {msg.payload}")
+    print("------------------------------------------------------")
 
     data = msg.payload.decode("utf-8")
     dict = json.loads(data)
-    print(f"Incoming dictionary: {dict}")
 
     if "connectionStatus" in dict.keys():
         LOCATIE = None
@@ -41,6 +41,19 @@ def on_message(client, userdata, msg):
         LOCATIE = dict["locatie"]
         publish.single("B2F/locatie", payload=json.dumps({"locatie": LOCATIE}), hostname="13.81.105.139", qos=0)
         # for testing
+
+    if "status" in dict.keys():
+        if(LOCATIE == "onderweg naar kleedkamer" and dict["status"] == "gearriveerd"):
+            LOCATIE = "kleedkamer"
+            publish.single("B2F/locatie", payload=json.dumps({"locatie": LOCATIE}), hostname="13.81.105.139", qos=0)
+        elif(LOCATIE == "onderweg naar sportscube" and dict["status"] == "gearriveerd"):
+            LOCATIE = "sportscube"
+            publish.single("B2F/locatie", payload=json.dumps({"locatie": LOCATIE}), hostname="13.81.105.139", qos=0)
+        elif(LOCATIE == "onderweg naar onthaal" and dict["status"] == "gearriveerd"):
+            LOCATIE = "onthaal"
+            publish.single("B2F/locatie", payload=json.dumps({"locatie": LOCATIE}), hostname="13.81.105.139", qos=0)
+        else:
+            print(f"ERROR PARSING 'ARRIVED', CURRENT LOCATION: {LOCATIE}")
 
 
     # actually doing something with the message...
