@@ -45,9 +45,9 @@ class Robot:
         """Constructor"""
         self.client = mqtt_client
         self.id = temi_serial
-        # Onderstaande is of de robot bezig is met een bepaalde taak. (Dit nog navragen)
-        # Dit is om zaken in de debug te plaatsen
-        self.silent = silent 
+        self.silent = silent
+
+        # silent => bepaald of zaken in de console worden afgeprint
 
         # set user data
         self.state = {"locations": [], "battery": {}, "goto": {}, "user": {}}
@@ -176,7 +176,6 @@ class Robot:
 
         self.client.publish(topic, payload, qos=1)
 
-# Niet alle properies zijn duidelijk bv.  GOTO_START
     @property
     def locations(self):
         """Return a list of locations"""
