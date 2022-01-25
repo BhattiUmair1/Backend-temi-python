@@ -45,11 +45,7 @@ def on_message(client, userdata, msg):
         data = msg.payload.decode("utf-8")
         dict = json.loads(data)
 
-        if "connectionStatus" in dict.keys():
-            LOCATIE = None
-            client.publish(
-                "B2F/locatie", payload=json.dumps({"locatie": LOCATIE}))
-            ROBOT.webview("https://temi-tablet.azurewebsites.net/")
+        LOCATIE = None
 
         if "locatie" in dict.keys():
             LOCATIE = dict["locatie"]
