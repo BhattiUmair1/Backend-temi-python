@@ -43,7 +43,7 @@ def on_message(client, userdata, msg):
     if "connectionStatus" in dict.keys():
         LOCATIE = None
         client.publish("B2F/locatie", payload=json.dumps({"locatie": LOCATIE}))
-        ROBOT.webview("https://temi-tablet.azurewebsites.net/")
+        client.publish("B2F/connected", payload=json.dumps(dict))
 
     if "locatie" in dict.keys():
         LOCATIE = dict["locatie"]
