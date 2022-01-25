@@ -5,7 +5,7 @@ import paho.mqtt.publish as publish
 import json
 import time
 import ssl
-import pytemi as temi
+from Src import pytemi as temi
 
 LOCATIE = None
 GUID = None
@@ -47,29 +47,7 @@ def on_message(client, userdata, msg):
 
         LOCATIE = None
 
-        if "locatie" in dict.keys():
-            LOCATIE = dict["locatie"]
-            client.publish(
-                "B2F/locatie", payload=json.dumps({"locatie": LOCATIE}))
-            # for testing
-
-        if "status" in dict.keys():
-            if(LOCATIE == "onderweg naar kleedkamer" and dict["status"] == "gearriveerd"):
-                LOCATIE = "kleedkamer"
-                client.publish(
-                    "B2F/locatie", payload=json.dumps({"locatie": LOCATIE}))
-            elif(LOCATIE == "onderweg naar sportscube" and dict["status"] == "gearriveerd"):
-                LOCATIE = "sportscube"
-                client.publish(
-                    "B2F/locatie", payload=json.dumps({"locatie": LOCATIE}))
-            elif(LOCATIE == "onderweg naar onthaal" and dict["status"] == "gearriveerd"):
-                LOCATIE = "onthaal"
-                client.publish(
-                    "B2F/locatie", payload=json.dumps({"locatie": LOCATIE}))
-            else:
-                print(f"ERROR PARSING 'ARRIVED', CURRENT LOCATION: {LOCATIE}")
-
-    elif topic == "F2B/return":
+    if topic == "F2B/return":
         data = msg.payload.decode("utf-8")
         dict = json.loads(data)
         LOCATIE = dict["locatie"]
@@ -77,6 +55,30 @@ def on_message(client, userdata, msg):
         client.publish(
             "B2F/return", payload=json.dumps({"locatie": LOCATIE, "GUID": GUID}))
         # actually doing something with the message...
+    else:
+        if "connectionStatus" in dict.keys():
+            LOCATIE = None
+            client.publish("B2F/locatie", payload=json.dumps({"locatie": LOCATIE}))
+            client.publish("B2F/connected", payload=json.dumps(dict))
+
+        if "locatie" in dict.keys():
+            LOCATIE = dict["locatie"]
+            client.publish("B2F/locatie", payload=json.dumps({"locatie": LOCATIE}))
+            # for testing
+
+        if "status" in dict.keys():
+            if(LOCATIE == "onderweg naar kleedkamer" and dict["status"] == "gearriveerd"):
+                LOCATIE = "kleedkamer"
+                client.publish("B2F/locatie", payload=json.dumps({"locatie": LOCATIE}))
+            elif(LOCATIE == "onderweg naar sportscube" and dict["status"] == "gearriveerd"):
+                LOCATIE = "sportscube"
+                client.publish("B2F/locatie", payload=json.dumps({"locatie": LOCATIE}))
+            elif(LOCATIE == "onderweg naar onthaal" and dict["status"] == "gearriveerd"):
+                LOCATIE = "onthaal"
+                client.publish("B2F/locatie", payload=json.dumps({"locatie": LOCATIE}))
+            else:
+                print(f"ERROR PARSING 'ARRIVED', CURRENT LOCATION: {LOCATIE}")
+
 
 
 def connect(host, port, username=None, password=None):
