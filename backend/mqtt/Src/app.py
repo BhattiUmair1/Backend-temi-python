@@ -41,15 +41,11 @@ def on_message(client, userdata, msg):
     print("------------------------------------------------------")
 
     topic = msg.topic
-    if topic == "F2B/locatie":
-        data = msg.payload.decode("utf-8")
-        dict = json.loads(data)
-
-        LOCATIE = None
+    
+    data = msg.payload.decode("utf-8")
+    dict = json.loads(data)
 
     if topic == "F2B/return":
-        data = msg.payload.decode("utf-8")
-        dict = json.loads(data)
         LOCATIE = dict["locatie"]
         GUID = dict["GUID"]
         client.publish(
