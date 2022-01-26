@@ -57,9 +57,21 @@ def on_message(client, userdata, msg):
             client.publish("B2F/locatie", payload=json.dumps({"locatie": LOCATIE}))
             client.publish("B2F/connected", payload=json.dumps(dict))
 
+        # hoe controleer je of temi bezig? 
         if "locatie" in dict.keys():
             LOCATIE = dict["locatie"]
             client.publish("B2F/locatie", payload=json.dumps({"locatie": LOCATIE}))
+            if (LOCATIE == "onderweg naar kleedkamer"):
+                # ga naar kleedkamer
+                pass
+
+            elif (LOCATIE == "onderweg naar sportscube"):
+                # ga naar sportscube
+                pass
+
+            elif (LOCATIE == "onderweg naar onthaal"):
+                # ga naar onthaal
+                pass
             # for testing
 
         if "status" in dict.keys():
