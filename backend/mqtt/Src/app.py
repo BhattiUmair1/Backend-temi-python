@@ -11,7 +11,7 @@ LOCATIE = None
 GUID = None
 
 HOST = "40.113.96.140"
-HOST_TEMI = "test.mosquitto.org"
+# HOST_TEMI = "test.mosquitto.org"
 PORT = 1883
 TEMI_SERIAL = "00121175512"
 # CA_CRT = "C:/ca.crt"
@@ -23,7 +23,8 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("F2B/connection")
     client.subscribe("F2B/locatie")
     client.subscribe("F2B/return")
-    client.subscribe(f"temi/{TEMI_SERIAL}/command/waypoint/goto")
+    # client.subscribe(f"temi/{TEMI_SERIAL}/#")
+    # client.subscribe("temi/test/talk")
 
 
 def on_disconnect(client, userdata, rc):
@@ -49,12 +50,16 @@ def on_message(client, userdata, msg):
         GUID = dict["GUID"]
         client.publish(
             "B2F/return", payload=json.dumps({"locatie": LOCATIE, "GUID": GUID}))
-        client.publish(
-            f"temi/{TEMI_SERIAL}/command/waypoint/goto", payload=json.dumps({"location": LOCATIE}))
+        # client.publish(
+        #    f"temi/{TEMI_SERIAL}/command/waypoint/goto", payload=json.dumps({"location": LOCATIE}))
 
-    elif topic == f"temi/{TEMI_SERIAL}/event/waypoint/goto":
-        status = dict["status"]
-        print("status: " + status)
+    # elif topic == f"temi/{TEMI_SERIAL}/event/waypoint/goto":
+    #     status = dict["status"]
+    #     print("status: " + status)
+
+    # elif topic == "temi/test/talk":
+    #     client.publish(
+    #         f"temi/{TEMI_SERIAL}/command/tts", payload=json.dumps({"utterance": "Dit is van de python"}))
 
     else:
         if "connectionStatus" in dict.keys():
@@ -71,19 +76,27 @@ def on_message(client, userdata, msg):
             time.sleep(2)
 
             if (LOCATIE == "onderweg naar kleedkamer"):
+                # client.publish(
+                #     f"temi/{TEMI_SERIAL}/command/waypoint/goto", payload=json.dumps({"location": "kleedkamer"}))
+                # LOCATIE = "kleedkamer"
+                time.sleep(10)
                 client.publish(
-                    f"temi/{TEMI_SERIAL}/command/waypoint/goto", payload=json.dumps({"location": "kleedkamer"}))
-                LOCATIE = "kleedkamer"
+                    "B2F/arrived", payload=json.dumps({"locatie": "kleedkamer", "status": "arrived"}))
 
             elif (LOCATIE == "onderweg naar sportscube"):
+                # client.publish(
+                #     f"temi/{TEMI_SERIAL}/command/waypoint/goto", payload=json.dumps({"location": "sportscube"}))
+                # LOCATIE = "sportscube"
+                time.sleep(10)
                 client.publish(
-                    f"temi/{TEMI_SERIAL}/command/waypoint/goto", payload=json.dumps({"location": "sportscube"}))
-                LOCATIE = "sportscube"
-
+                    "B2F/arrived", payload=json.dumps({"locatie": "sportscube", "status":"arrived"}))
             elif (LOCATIE == "onderweg naar onthaal"):
+                # client.publish(
+                #     f"temi/{TEMI_SERIAL}/command/waypoint/goto", payload=json.dumps({"location": "onthaal"}))
+                # LOCATIE = "onthaal"
+                time.sleep(10)
                 client.publish(
-                    f"temi/{TEMI_SERIAL}/command/waypoint/goto", payload=json.dumps({"location": "onthaal"}))
-                LOCATIE = "onthaal"
+                    "B2F/arrived", payload=json.dumps({"locatie": "onthaal", "status":"arrived"}))
 
 
 def connect(host, port, username=None, password=None):
@@ -98,7 +111,6 @@ def connect(host, port, username=None, password=None):
 
     # connect to MQTT broker
     client.connect(host=host, port=port, keepalive=60)
-
     # start listening to topics
     client.loop_forever()
 
