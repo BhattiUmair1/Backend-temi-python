@@ -23,6 +23,8 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("F2B/connection")
     client.subscribe("F2B/locatie")
     client.subscribe("F2B/return")
+    client.subscribe("F2B/help")
+    client.subscribe("gsm/arrived")
     # client.subscribe(f"temi/{TEMI_SERIAL}/#")
     # client.subscribe("temi/test/talk")
 
@@ -49,7 +51,7 @@ def on_message(client, userdata, msg):
         LOCATIE = dict["locatie"]
         GUID = dict["GUID"]
         client.publish(
-            "B2F/return", payload=json.dumps({"locatie": LOCATIE, "GUID": GUID}))
+            "B2F/return", payload=json.dumps({"locatie": LOCATIE, "GUID": GUID, "return": True}))
         # client.publish(
         #    f"temi/{TEMI_SERIAL}/command/waypoint/goto", payload=json.dumps({"location": LOCATIE}))
 
@@ -60,7 +62,14 @@ def on_message(client, userdata, msg):
     # elif topic == "temi/test/talk":
     #     client.publish(
     #         f"temi/{TEMI_SERIAL}/command/tts", payload=json.dumps({"utterance": "Dit is van de python"}))
+    elif topic == "gsm/arrived":
+        client.publish(
+            "B2F/arrived", payload=json.dumps({"locatie": LOCATIE, "status": "arrived"}))
+        client.publish(
+            "B2F/locatie", payload=json.dumps({"locatie": LOCATIE}))
 
+    elif topic == "F2B/help":
+        client.publish("B2F/help", payload=json.dumps(dict))
     else:
         if "connectionStatus" in dict.keys():
             LOCATIE = None
@@ -76,27 +85,27 @@ def on_message(client, userdata, msg):
             time.sleep(2)
 
             if (LOCATIE == "onderweg naar kleedkamer"):
-                # client.publish(
-                #     f"temi/{TEMI_SERIAL}/command/waypoint/goto", payload=json.dumps({"location": "kleedkamer"}))
-                # LOCATIE = "kleedkamer"
-                time.sleep(10)
-                client.publish(
-                    "B2F/arrived", payload=json.dumps({"locatie": "kleedkamer", "status": "arrived"}))
+                #     client.publish(
+                #         f"temi/{TEMI_SERIAL}/command/waypoint/goto", payload=json.dumps({"location": "kleedkamer"}))
+                LOCATIE = "kleedkamer"
+            #     time.sleep(10)
+            #     client.publish(
+            #         "B2F/arrived", payload=json.dumps({"locatie": "kleedkamer", "status": "arrived"}))
 
             elif (LOCATIE == "onderweg naar sportscube"):
-                # client.publish(
-                #     f"temi/{TEMI_SERIAL}/command/waypoint/goto", payload=json.dumps({"location": "sportscube"}))
-                # LOCATIE = "sportscube"
-                time.sleep(10)
-                client.publish(
-                    "B2F/arrived", payload=json.dumps({"locatie": "sportscube", "status":"arrived"}))
+                #     client.publish(
+                #         f"temi/{TEMI_SERIAL}/command/waypoint/goto", payload=json.dumps({"location": "sportscube"}))
+                LOCATIE = "sportscube"
+            #     time.sleep(10)
+            #     client.publish(
+            #         "B2F/arrived", payload=json.dumps({"locatie": "sportscube", "status":"arrived"}))
             elif (LOCATIE == "onderweg naar onthaal"):
-                # client.publish(
-                #     f"temi/{TEMI_SERIAL}/command/waypoint/goto", payload=json.dumps({"location": "onthaal"}))
-                # LOCATIE = "onthaal"
-                time.sleep(10)
-                client.publish(
-                    "B2F/arrived", payload=json.dumps({"locatie": "onthaal", "status":"arrived"}))
+                #     client.publish(
+                #         f"temi/{TEMI_SERIAL}/command/waypoint/goto", payload=json.dumps({"location": "onthaal"}))
+                LOCATIE = "onthaal"
+            #     time.sleep(10)
+            #     client.publish(
+            #         "B2F/arrived", payload=json.dumps({"locatie": "onthaal", "status":"arrived"}))
 
 
 def connect(host, port, username=None, password=None):
