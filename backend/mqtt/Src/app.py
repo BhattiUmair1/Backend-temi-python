@@ -23,6 +23,7 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("F2B/connection")
     client.subscribe("F2B/locatie")
     client.subscribe("F2B/return")
+    client.subscribe("F2B/help")
     # client.subscribe(f"temi/{TEMI_SERIAL}/#")
     # client.subscribe("temi/test/talk")
 
@@ -48,8 +49,7 @@ def on_message(client, userdata, msg):
     if topic == "F2B/return":
         LOCATIE = dict["locatie"]
         GUID = dict["GUID"]
-        client.publish(
-            "B2F/return", payload=json.dumps({"locatie": LOCATIE, "GUID": GUID}))
+        client.publish("B2F/return", payload=json.dumps({"locatie": LOCATIE, "GUID": GUID}))
         # client.publish(
         #    f"temi/{TEMI_SERIAL}/command/waypoint/goto", payload=json.dumps({"location": LOCATIE}))
 
@@ -60,7 +60,8 @@ def on_message(client, userdata, msg):
     # elif topic == "temi/test/talk":
     #     client.publish(
     #         f"temi/{TEMI_SERIAL}/command/tts", payload=json.dumps({"utterance": "Dit is van de python"}))
-
+    elif topic == "F2B/help":
+        client.publish("B2F/help", payload=json.dumps(dict))
     else:
         if "connectionStatus" in dict.keys():
             LOCATIE = None
